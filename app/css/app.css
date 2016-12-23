@@ -1,0 +1,65 @@
+
+.emailContainer {
+  padding: 10px;
+  margin-right: 20px;
+  float: right;
+
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
+
+  width: 400px;
+  height: 400px;
+}
+
+.hero-body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+}
+
+.menu {
+  border-right: 1px solid black;
+  padding: 20px;
+  text-align: center;
+}
+.menu ul {
+  text-align: left;
+}
+
+#compose {
+  margin-bottom: 30px;
+}
+
+.inboxContainer {
+  padding: 20px;
+}
+
+.inboxLine {
+  width: 100%;
+  padding: 10px;
+
+  cursor: pointer;
+}
+
+.inboxLine:not(:last-child) {
+  border-bottom: 1px solid black;
+}
+
+.inboxLine:hover {
+  background-color: lightgrey;
+}
+
+#login {
+  margin-top: 20px;
+}
+
+#overlay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  width: 100%;
+}
+
+#app {
+  padding-top: 20px;
+}

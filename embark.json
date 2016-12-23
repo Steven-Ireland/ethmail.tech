@@ -1,0 +1,12 @@
+{
+  "contracts": ["app/contracts/**"],
+  "app": {
+    "css/app.css": ["app/css/**"],
+    "js/app.js": ["embark.js", "app/js/app.js"],
+    "js/openpgp.min.js": ["app/js/openpgp.min.js"],
+    "js/openpgp.worker.min.js": ["app/js/openpgp.worker.min.js"],
+    "index.html": "app/index.html"
+  },
+  "buildDir": "dist/",
+  "config": "config/"
+}

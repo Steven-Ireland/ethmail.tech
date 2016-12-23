@@ -1,0 +1,88 @@
+{
+  "0x9a3961e5d7d66ee550e52d1f944df7f2bddb926b724f831f88c92ae2cb1b9e76": {
+    "name": "development",
+    "contracts": {
+      "85f78fe2fc61a9525dbc70b73c05ea7c5588dc58d28c80bb6f8e504f4a4113a3": {
+        "address": "0x84cf254d2096de2242b3bcbb66c9792f77ac1f7e",
+        "name":    "Mail"
+      }
+    }
+  },
+  "0xb6cfeab83614da04c03db0fb8a6787a45d0be8d576fcc6f8f457a5a816d22ab3": {
+    "name": "development",
+    "contracts": {
+      "192da0f8c341e6d7aa1c69affef3bd2b43063ef65d9596dcfbd5d72835bbb2e8": {
+        "address": "0x1fdaa707e7be0a131fd2cad4c253932424d3baab",
+        "name":    "Mail"
+      },
+      "1d72922567d2b1bf1b777997990faec6d48bc886735431b0564f246476066cea": {
+        "address": "0xb96d360621fdfb4f3912ca7889b8d957ce4af59c",
+        "name":    "Mail"
+      },
+      "3240e832b39e5bc54135abe4b4b827eaaaa110244b1827b69313b931725f3fb0": {
+        "address": "0x9c4b72667126d107274472ee801e4d58e5abe106",
+        "name":    "Mail"
+      },
+      "3a640a6e8841becb7a577287b63a7365c3a763b3ad3f36f1d9e2ec6fd749f274": {
+        "address": "0x922723375be2962a743474f4990a430c4bb5c07f",
+        "name":    "Mail"
+      },
+      "3c93b0ec696d6d20b65bfe4f6b22df8829c7050110e81c911bef69be3e2a887a": {
+        "address": "0x32c28c2065fcd6f2ab995508beef4fa7c5a4ba3c",
+        "name":    "Mail"
+      },
+      "77ace881bd3b07aea4bdb86e3c4e430f9e0fbbc1a120278e45ec7d595a600f62": {
+        "address": "0xd5a24f97ec1256020858f05e30928eab00ee6ef8",
+        "name":    "Mail"
+      },
+      "77d024f25c4c14bdbfeba3e3a1ba022a9370b026fe8a328f490ce1232d717478": {
+        "address": "0xefebef08e93f7c27ae8b360555cfcceb34cd7192",
+        "name":    "Mail"
+      },
+      "7e661ad298e50bdb25c24af169c148284944a0128a74bae07d5789fee1fbf077": {
+        "address": "0xe88f4482d609925a27cae4141e5af705f45aeed7",
+        "name":    "Mail"
+      },
+      "85f78fe2fc61a9525dbc70b73c05ea7c5588dc58d28c80bb6f8e504f4a4113a3": {
+        "address": "0x50a74063a7782f9ac886e9b49e39415afb81467d",
+        "name":    "Mail"
+      },
+      "88163116e45e7ec67b50f02c4525dbbe5acb29e6e93d13e9dfd2b316631bc074": {
+        "address": "0xc2e4d6c279b9168978b04e4d5d69b21f1a4a87d7",
+        "name":    "Mail"
+      },
+      "881cd71a6a63c935b47b21243e9eed03b0a0d296d1c08503971e3914bf1081ce": {
+        "address": "0x686a9ff7808a16402f414869287e54b44122e461",
+        "name":    "Mail"
+      },
+      "92a948b132ba1ed589c836ae286dc40580a7a2025f53ca5b27113701fa39b6f9": {
+        "address": "0x1fbf1cc008e40584580d19b5cd8c4a83852d81a9",
+        "name":    "Mail"
+      },
+      "c6287c89876cee15b6f9a93b5930caa9e7285605f703e01998097bca20cc4c75": {
+        "address": "0x7369ca211c2b6871b294ecbb083829fa723c488e",
+        "name":    "Mail"
+      },
+      "cee1326107c574167ba1388e3fe271470f7eab1ea9bd93652ca94227f9b6fd01": {
+        "address": "0x1d2463a6ced5393ff26a8735bef9d1ec959355ec",
+        "name":    "Mail"
+      },
+      "d18f893886418f1fd94ddf4e455e39b991f3fb4a59df8f2f507db5c8d3ac20c6": {
+        "address": "0xfa0050a7fc670a0b232ad812c04d542cff74d666",
+        "name":    "Mail"
+      },
+      "ed599afd9bc56b598efd98e9961ccd91b4c92896c13c7d4fe7d2235779865200": {
+        "address": "0x6a282e845ed1342e113881bc02bdaacb76dd82af",
+        "name":    "Mail"
+      },
+      "ee2b8b5351b99402a7421018e1121ac12fbbfd06b4806e2e03462b03ce7652ba": {
+        "address": "0x521272e83164e3c734d16666f13ae95b6728ff1c",
+        "name":    "Mail"
+      },
+      "fe751eb33a40c615098664b4dd712c429e437b1ed2920bfbe54934a857e935a3": {
+        "address": "0xb0632b87bdd8cd701070d11b0130d4e07fe828fc",
+        "name":    "Mail"
+      }
+    }
+  }
+}
