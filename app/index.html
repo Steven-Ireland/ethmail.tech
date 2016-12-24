@@ -13,124 +13,122 @@
     <script src="./js/app.js"></script>
   </head>
   <body>
-
-  <div class="hero is-dark">
-    <div class="hero-head">
-      <div class="container">
-        <nav class="nav">
-          <div class="nav-left">
-            <a class="is-brand is-large nav-item" href="/">E(th)-Mail</a>
-          </div>
-          <div class="nav-right">
-            <a class="nav-item" href="#about">About</a>
-            <a class="nav-item" href="#signup">Signup</a>
-          </div>
-        </nav>
-      </div>
-    </div>
-  </div>
-
-  <div id="app" v-cloak>
-    <div class="columns" v-if="inbox.ready">
-      <div class="column is-2">
-        <aside class="menu">
-          <a @click="compose" class="button is-dark is-outlined is-large">Compose</a>
-          <ul class="menu-list">
-            <li><a href="#inbox">Inbox</a></li>
-          </ul>
-        </aside>
-      </div>
-      <div class="column is-10">
-        <div id="inbox">
-          <div v-if="inbox.currentEmail" class="content">
-            <h1>{{ currentEmail.subject }}</h1>
-            <p>{{ currentEmail.body }}</p>
-          </div>
-          <ul v-else>
-            <h3>Unread</h3>
-            <li v-for="(email,index) in inbox.unreadEmails" v-on:click="examineMail(email)">
-              <h3>{{ email.subject }}</h3> <p>{{ email.body }}</p>
-            </li>
-
-            <h3>Read</h3>
-            <li v-for="(email,index) in inbox.readEmails" v-on:click="examineMail(email)">
-              <h3>{{ email.subject }}</h3> <p>{{ email.body }}</p>
-            </li>
-          </ul>
+    <div class="hero is-dark">
+      <div class="hero-head">
+        <div class="container">
+          <nav class="nav">
+            <div class="nav-left">
+              <a class="is-brand is-large nav-item" href="/">E(th)-Mail</a>
+            </div>
+            <div class="nav-right">
+              <a class="nav-item" href="#about">About</a>
+              <a class="nav-item" href="#signup">Signup</a>
+            </div>
+          </nav>
         </div>
       </div>
     </div>
-    <div class="" v-else>
-      <div id="login" class="container" v-if="account.exists">
-        <h1 class="title">Login: {{account.address}}</h1>
-        <h2 class="subtitle">I'm here to..</h2>
-        <p class="control has-addons">
-          <a class="button" :class="{ 'is-primary': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
-          <a class="button" :class="{ 'is-primary': this.inbox.readOldMail }" @click="toggleOldMail">Read previously decrypted mail with my password</a>
-        </p>
 
-        <p class="control" v-show="inbox.readOldMail">
-          <label class="label" >Password: </label>
-          <input type="password" v-model="account.password">
-        </p>
+    <div id="app" v-cloak>
+      <div class="columns" v-if="inbox.ready">
+        <div class="column is-2">
+          <aside class="menu">
+            <a @click="compose" class="button is-dark is-outlined is-large">Compose</a>
+            <ul class="menu-list">
+              <li><a href="#inbox">Inbox</a></li>
+            </ul>
+          </aside>
+        </div>
+        <div class="column is-10">
+          <div id="inbox">
+            <div v-if="inbox.currentEmail" class="content">
+              <h1>{{ currentEmail.subject }}</h1>
+              <p>{{ currentEmail.body }}</p>
+            </div>
+            <ul v-else>
+              <h3>Unread</h3>
+              <li v-for="(email,index) in inbox.unreadEmails" v-on:click="examineMail(email)">
+                <h3>{{ email.subject }}</h3> <p>{{ email.body }}</p>
+              </li>
 
-        <p class="control" v-show="inbox.readNewMail">
-          <label class="label">PGP Private Key: </label>
-          <input type="file" ref="keyfile" @change="loadKey"></input>
-          <textarea class="textarea" v-model="account.privateKey"></textarea>
-        </p>
-        <p class="control" v-show="inbox.readNewMail">
-          <label class="label" >PGP Passphrase (optional): </label>
-          <input type="password" v-model="account.passphrase">
-        </p>
-
-        <p class="control" v-show="inbox.readNewMail || inbox.readOldMail">
-          <a class="button is-primary" @click="login">Login</a>
-        </p>
+              <h3>Read</h3>
+              <li v-for="(email,index) in inbox.readEmails" v-on:click="examineMail(email)">
+                <h3>{{ email.subject }}</h3> <p>{{ email.body }}</p>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div id="register" class="container" v-if="!account.exists">
-        <div class="content">
-          <p>In order to "create" your account, we must store a PGP Public Key
-            that maps to your ethereum address</p>
-
-          <p>This key is used to encrypt any emails sent to you, such that
-            only you can read them with your PGP Private key. Once you send an email, it belongs to that
-            address, encrypted with their PGP Public Key, and only able to be
-            decrypted with their PGP Private Key. If you lose your private key or forget its associated passphrase,
-            you will lose all incoming mail which was encrypted to it. </p>
-          <p>You will have the opportunity to mark your incoming mail as read and re-encrypt it with a familiar
-            password. Doing so will mitigate the loss of losing access to your private key and allow you to check
-            previously read mail without it.</p>
-          <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own.</p>
-
+      <div class="" v-else>
+        <div id="login" class="container" v-if="account.exists">
+          <h1 class="title">Login: {{account.address}}</h1>
+          <h2 class="subtitle">I'm here to..</h2>
           <p class="control has-addons">
-            <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
-            <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }" :disabled="account.isGenerating">Generate</a>
+            <a class="button" :class="{ 'is-primary': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
+            <a class="button" :class="{ 'is-primary': this.inbox.readOldMail }" @click="toggleOldMail">Read previously decrypted mail with my password</a>
           </p>
-          <p class="control">
-            <label class="label">Public Key</label>
-            <textarea class="textarea" v-model="account.publicKey" :disabled="account.isGenerating"></textarea>
+
+          <p class="control" v-show="inbox.readOldMail">
+            <label class="label" >Password: </label>
+            <input type="password" v-model="account.password">
           </p>
-          <p class="control">
-            <label class="label">Private Key</label>
-            <a class="button" :href="keyDownloadLink()" v-show="account.privateKey.length>0">Download</a>
-            <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea>
+
+          <p class="control" v-show="inbox.readNewMail">
+            <label class="label">PGP Private Key: </label>
+            <input type="file" ref="keyfile" @change="loadKey"></input>
+            <textarea class="textarea" v-model="account.privateKey"></textarea>
           </p>
-          <p class="control" v-show="signupReady">
-            <a class="button is-primary" @click="signup">Register!</a>
+          <p class="control" v-show="inbox.readNewMail">
+            <label class="label" >PGP Passphrase (optional): </label>
+            <input type="password" v-model="account.passphrase">
           </p>
+
+          <p class="control" v-show="inbox.readNewMail || inbox.readOldMail">
+            <a class="button is-primary" @click="login">Login</a>
+          </p>
+        </div>
+        <div id="register" class="container" v-if="!account.exists">
+          <div class="content">
+            <p>In order to "create" your account, we must store a PGP Public Key
+              that maps to your ethereum address</p>
+
+            <p>This key is used to encrypt any emails sent to you, such that
+              only you can read them with your PGP Private key. Once you send an email, it belongs to that
+              address, encrypted with their PGP Public Key, and only able to be
+              decrypted with their PGP Private Key. If you lose your private key or forget its associated passphrase,
+              you will lose all incoming mail which was encrypted to it. </p>
+            <p>You will have the opportunity to mark your incoming mail as read and re-encrypt it with a familiar
+              password. Doing so will mitigate the loss of losing access to your private key and allow you to check
+              previously read mail without it.</p>
+            <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own.</p>
+
+            <p class="control has-addons">
+              <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
+              <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }" :disabled="account.isGenerating">Generate</a>
+            </p>
+            <p class="control">
+              <label class="label">Public Key</label>
+              <textarea class="textarea" v-model="account.publicKey" :disabled="account.isGenerating"></textarea>
+            </p>
+            <p class="control">
+              <label class="label">Private Key</label>
+              <a class="button" :href="keyDownloadLink()" v-show="account.privateKey.length>0">Download</a>
+              <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea>
+            </p>
+            <p class="control" v-show="signupReady">
+              <a class="button is-primary" @click="signup">Register!</a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div id="overlay">
+        <div class="emailContainer" v-for="email in inbox.composing">
+          <input class="input" placeholder="to" :value="email.to">
+          <input class="input" placeholder="to" :value="email.subject">
+          <textarea class="textarea" :value="email.body"></textarea>
+          <a class="button is-dark" @click="email.send">Send</a>
         </div>
       </div>
     </div>
-  </div>
-
-  <div id="overlay">
-    <div class="emailContainer" v-for="email in inbox.composing">
-      <input class="input" placeholder="to" :value="email.to">
-      <input class="input" placeholder="to" :value="email.subject">
-      <textarea class="textarea" :value="email.body"></textarea>
-      <a class="button is-dark" @click="email.send">Send</a>
-    </div>
-  </div>
   </body>
 </html>

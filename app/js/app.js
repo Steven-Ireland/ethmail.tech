@@ -65,6 +65,7 @@ function initializeVue() {
         readEmails: [],
         unreadEmails: [],
         currentEmail: false,
+        composing: [],
         ready: false,
         readNewMail: false,
         readOldMail: false
@@ -121,7 +122,7 @@ function initializeVue() {
         loadMail();
       },
       compose: function() {
-        this.inbox.composing.push(Email('','',''));
+        this.inbox.composing.push(new Email('','',''));
       },
       signup: function() {
         Mail.register(this.account.address).then(function() {
@@ -142,7 +143,6 @@ function Email(to, subj, body) {
   this.to=to;
   this.subject = subj;
   this.body = body;
-  this.me = this;
 
   this.encrypt = function() {
     Mail.userExists(to).then(function (exists) {
@@ -161,9 +161,12 @@ function Email(to, subj, body) {
       }
     });
   };
+
+  var me = this;
   this.send = function() {
-    Mail.sendMail(to, encrypt()).then(function() {
+    Mail.sendMail(to, me.encrypt()).then(function() {
       app.inbox.composing.remove(me);
     });
   };
+
 }
