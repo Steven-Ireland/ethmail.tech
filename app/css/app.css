@@ -63,3 +63,11 @@
 #app {
   padding-top: 20px;
 }
+
+.inboxLine.level {
+  margin-bottom: 0px;
+}
+
+#inbox h2 {
+  margin-bottom: 20px;
+}

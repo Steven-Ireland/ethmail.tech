@@ -26,22 +26,24 @@ function loadMail() {
     numRead = sizes[1];
 
     if (app.account.privateKey) {
-      for (var i=0; i<numUnread; i--) {
-        Mail.loadUnread().then(function(mail) {
-          decryptMail(mail, false, app.account.privateKey);
-
-          // app.inbox.unreadMail.splice(numUnread - i, 0, decryptedMail);
+      for (var i=0; i<numUnread; i++) {
+        Mail.loadUnread(i).then(function(mail) {
+          var from = mail[0];
+          var content = mail[1];
+          decryptMail(content, false, app.account.privateKey)
+            .then(function(decryptedMail) {
+              var maildata = JSON.parse(decryptedMail);
+              app.inbox.emails.splice(0,0,new Email(from, maildata.subject, maildata.body));
+            });
         });
       }
     }
 
-    for (var i=0; i<numRead; i--) {
-      Mail.loadRead().then(function(mail) {
+    /*for (var i=0; i<numRead; i++) {
+      Mail.loadRead(i).then(function(mail) {
         // decrypt read mail with symmetric key
-
-        // app.inbox.readMail.splice(numRead - i, 0, decryptedMail);
       });
-    }
+    }*/
   });
 }
 
@@ -50,7 +52,7 @@ function decryptMail(encryptedMail, isSymmetric, keyOrPassword) {
   pgpOpts.message= openpgp.message.readArmored(encryptedMail);
 
   if (isSymmetric) { pgpOpts.password = keyOrPassword; }
-  else { pgpOpts.privateKey = keyOrPassword; }
+  else { pgpOpts.privateKey = openpgp.key.readArmored(keyOrPassword).keys[0]; }
 
   return openpgp.decrypt(pgpOpts).then(function(decryptedContent) {
     return decryptedContent.data;
@@ -62,8 +64,7 @@ function initializeVue() {
     el: '#app',
     data: {
       inbox: {
-        readEmails: [],
-        unreadEmails: [],
+        emails: [],
         currentEmail: false,
         composing: [],
         ready: false,
@@ -82,6 +83,7 @@ function initializeVue() {
     },
     methods: {
       examineMail: function(email) {
+        console.log(email);
         this.inbox.currentEmail = email;
       },
       toggleNewMail: function() {
@@ -125,8 +127,17 @@ function initializeVue() {
         this.inbox.composing.push(new Email('','',''));
       },
       signup: function() {
-        Mail.register(this.account.address).then(function() {
+        Mail.register(this.account.publicKey).then(function() {
           app.account.exists = true;
+        });
+      },
+      send: function(mail, idx) {
+        mail.loading = true;
+        mail.encrypt(function(encryptedMail) {
+          Mail.sendMail(mail.addr, encryptedMail).then(function() {
+            mail.loading = false;
+            app.inbox.composing.splice(idx, 1);
+          });
         });
       }
     },
@@ -139,21 +150,26 @@ function initializeVue() {
 }
 
 
-function Email(to, subj, body) {
-  this.to=to;
+function Email(addr, subj, body) {
+  this.addr=addr;
   this.subject = subj;
   this.body = body;
+  this.loading = false;
+  this.read=true;
 
-  this.encrypt = function() {
-    Mail.userExists(to).then(function (exists) {
+  var my = this;
+  this.encrypt = function(cb) {
+    Mail.userExists(my.addr).then(function (exists) {
+
       if (exists) {
-        Mail.getPublicKey(to).then(function(pubkey) {
+        Mail.getPublicKey(my.addr).then(function(pubkey) {
           var pgpOpts = {
-            data: ethmailcontent,
+            data: JSON.stringify({subject: my.subject, body: my.body}),
             publicKeys: openpgp.key.readArmored(pubkey.replace(/\r/g, '')).keys
           };
           openpgp.encrypt(pgpOpts).then(function(encrypted) {
-            return encrypted;
+            this.loading = false;
+            cb(encrypted.data);
           });
         });
       } else {
@@ -161,12 +177,4 @@ function Email(to, subj, body) {
       }
     });
   };
-
-  var me = this;
-  this.send = function() {
-    Mail.sendMail(to, me.encrypt()).then(function() {
-      app.inbox.composing.remove(me);
-    });
-  };
-
 }

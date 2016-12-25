@@ -21,8 +21,8 @@
               <a class="is-brand is-large nav-item" href="/">E(th)-Mail</a>
             </div>
             <div class="nav-right">
-              <a class="nav-item" href="#about">About</a>
-              <a class="nav-item" href="#signup">Signup</a>
+              <a class="nav-item is-light is-outlined" href="#about">Tweet</a>
+              <a class="nav-item is-light is-outlined" href="#signup">Login</a>
             </div>
           </nav>
         </div>
@@ -33,28 +33,35 @@
       <div class="columns" v-if="inbox.ready">
         <div class="column is-2">
           <aside class="menu">
-            <a @click="compose" class="button is-dark is-outlined is-large">Compose</a>
-            <ul class="menu-list">
+            <a @click="compose" class="button is-dark is-outlined">Compose</a>
+            <!-- <ul class="menu-list">
               <li><a href="#inbox">Inbox</a></li>
-            </ul>
+            </ul> -->
           </aside>
         </div>
         <div class="column is-10">
           <div id="inbox">
             <div v-if="inbox.currentEmail" class="content">
-              <h1>{{ currentEmail.subject }}</h1>
-              <p>{{ currentEmail.body }}</p>
+              <h1>{{ inbox.currentEmail.subject }}</h1>
+              <p>{{ inbox.currentEmail.body }}</p>
             </div>
             <ul v-else>
-              <h3>Unread</h3>
-              <li v-for="(email,index) in inbox.unreadEmails" v-on:click="examineMail(email)">
-                <h3>{{ email.subject }}</h3> <p>{{ email.body }}</p>
+              <h2>Inbox</h2>
+              <li class="inboxLine level" v-for="(email,index) in inbox.unreadEmails" v-on:click="examineMail(email)">
+                <div class="level-left">
+                  <div class="level-item">
+                    <h3>{{ email.subject }}</h3>
+                  </div>
+                  <div class="level-item">
+                    <p>{{ email.body }}</p>
+                  </div>
+                </div>
               </li>
 
-              <h3>Read</h3>
+              <!--<h3>Read</h3>
               <li v-for="(email,index) in inbox.readEmails" v-on:click="examineMail(email)">
                 <h3>{{ email.subject }}</h3> <p>{{ email.body }}</p>
-              </li>
+              </li> -->
             </ul>
           </div>
         </div>
@@ -122,11 +129,11 @@
         </div>
       </div>
       <div id="overlay">
-        <div class="emailContainer" v-for="email in inbox.composing">
-          <input class="input" placeholder="to" :value="email.to">
-          <input class="input" placeholder="to" :value="email.subject">
-          <textarea class="textarea" :value="email.body"></textarea>
-          <a class="button is-dark" @click="email.send">Send</a>
+        <div class="emailContainer" v-for="(email,index) in inbox.composing">
+          <input class="input" placeholder="To" v-model="email.addr">
+          <input class="input" placeholder="Subject" v-model="email.subject">
+          <textarea class="textarea" placeholder="Body" v-model="email.body"></textarea>
+          <a class="button is-dark" :class="{'is-loading': email.loading}" @click="send(email, index)">Send</a>
         </div>
       </div>
     </div>
