@@ -31,6 +31,10 @@ a {
 
 }
 
+.examine p {
+  white-space: pre-wrap;
+}
+
 aside {
   padding-left: 20px;
 }
@@ -49,8 +53,15 @@ aside {
   width: 100%;
   padding: 10px;
 
-  overflow: hidden;
   cursor: pointer;
+}
+
+.inboxline p.overflow-ellipsis {
+  text-overflow: ellipsis;
+}
+
+.inboxLine p {
+  white-space: nowrap;
 }
 
 .inboxLine.level {

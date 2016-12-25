@@ -69,7 +69,7 @@
           </div>
           <div class="column">
             <div id="inbox">
-              <div v-if="inbox.currentEmail" class="content">
+              <div v-if="inbox.currentEmail" class="content examine">
                 <h1>{{ inbox.currentEmail.subject }}</h1>
                 <p>{{ inbox.currentEmail.body }}</p>
               </div>
@@ -83,7 +83,7 @@
                       <p class="is-bold">{{ email.subject }}</p>
                     </div>
                     <div class="level-item">
-                      <p>{{ email.body }}</p>
+                      <p class="overflow-ellipsis">{{ email.body }}</p>
                     </div>
                   </div>
                   <div class="level-right">
@@ -136,7 +136,7 @@
             <p>You will have the opportunity to mark your incoming mail as read and re-encrypt it with a familiar
               password. Doing so will mitigate the loss of losing access to your private key and allow you to check
               previously read mail without it.</p>
-            <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own.</p>
+            <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own (may take a minute).</p>
 
             <p class="control has-addons">
               <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
