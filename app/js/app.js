@@ -109,7 +109,10 @@ function initializeVue() {
         this.inbox.currentEmail = false;
       },
       replyMail: function(email) {
-        // todo
+        if (this.inbox.currentEmail) {
+          var selected = this.inbox.currentEmail;
+          this.inbox.composing.push(new Email(selected.addr, 'RE: '+selected.subject, ''));
+        }
       },
       toggleNewMail: function() {
         this.inbox.readNewMail = !this.inbox.readNewMail;
