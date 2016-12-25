@@ -50,12 +50,13 @@ contract Mail {
     }
   }
 
-  function loadUnread(uint recent) constant returns(address, string) {
+  function loadUnread(uint recent) constant returns(address, string, uint) {
     if (userExists(msg.sender)) {
       return (users[msg.sender].unread[recent].from,
-              users[msg.sender].unread[recent].content);
+              users[msg.sender].unread[recent].content,
+              users[msg.sender].unread[recent].timestamp);
     } else {
-      return (owner, "An Error has Occured");
+      return (owner, "An Error has Occured", 0);
     }
   }
 
