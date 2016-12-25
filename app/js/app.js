@@ -19,32 +19,52 @@ $(document).ready(function() {
 
 function loadMail() {
   var numUnread = 0;
-  var numRead = 0;
-  Promise.all([Mail.getUnreadSize(), Mail.getReadSize()])
-  .then(function(sizes) {
-    numUnread = sizes[0];
-    numRead = sizes[1];
+  Mail.getUnreadSize().then(function(size) {
+    numUnread = size;
 
     if (app.account.privateKey) {
       for (var i=0; i<numUnread; i++) {
         Mail.loadUnread(i).then(function(mail) {
-          var from = mail[0];
-          var content = mail[1];
-          decryptMail(content, false, app.account.privateKey)
-            .then(function(decryptedMail) {
-              var maildata = JSON.parse(decryptedMail);
-              app.inbox.emails.splice(0,0,new Email(from, maildata.subject, maildata.body));
-            });
+          processMail(mail);
+        });
+      }
+
+      web3.eth.filter("latest").watch(function(err, res) {
+        checkForMoreMail(numUnread).then(function(num) {
+          numUnread = num;
+        });
+      });
+    }
+  });
+}
+
+function checkForMoreMail(lastCount) {
+  Mail.getUnreadSize().then(function(size) {
+    if (size > lastCount) {
+      console.log("Maiiiil time!");
+      for (var i=lastCount; i < size; i++) {
+        Mail.loadUnread(i).then(function(mail) {
+          processMail(mail);
+          console.log("Found more mails!");
         });
       }
     }
-
-    /*for (var i=0; i<numRead; i++) {
-      Mail.loadRead(i).then(function(mail) {
-        // decrypt read mail with symmetric key
-      });
-    }*/
+    return size;
   });
+}
+
+function processMail(mail) {
+  var from = mail[0];
+  var content = mail[1];
+  var timestamp = mail[2];
+  decryptMail(content, false, app.account.privateKey)
+    .then(function(decryptedMail) {
+      var maildata = JSON.parse(decryptedMail);
+      var email = new Email(from, maildata.subject, maildata.body, timestamp);
+      app.inbox.emails.splice(_.sortedIndexBy(app.inbox.emails, email, function(m) {
+        return -1*m.timestamp;
+      }),0,email);
+    });
 }
 
 function decryptMail(encryptedMail, isSymmetric, keyOrPassword) {
@@ -83,8 +103,13 @@ function initializeVue() {
     },
     methods: {
       examineMail: function(email) {
-        console.log(email);
         this.inbox.currentEmail = email;
+      },
+      stopExamineMail: function() {
+        this.inbox.currentEmail = false;
+      },
+      replyMail: function(email) {
+        // todo
       },
       toggleNewMail: function() {
         this.inbox.readNewMail = !this.inbox.readNewMail;
@@ -131,14 +156,17 @@ function initializeVue() {
           app.account.exists = true;
         });
       },
-      send: function(mail, idx) {
+      send: function(mail, index) {
         mail.loading = true;
         mail.encrypt(function(encryptedMail) {
           Mail.sendMail(mail.addr, encryptedMail).then(function() {
             mail.loading = false;
-            app.inbox.composing.splice(idx, 1);
+            app.close(index);
           });
         });
+      },
+      close: function(index) {
+        app.inbox.composing.splice(index, 1);
       }
     },
     computed: {
@@ -150,12 +178,13 @@ function initializeVue() {
 }
 
 
-function Email(addr, subj, body) {
+function Email(addr, subj, body, timestamp) {
   this.addr=addr;
   this.subject = subj;
   this.body = body;
   this.loading = false;
   this.read=true;
+  this.timestamp=timestamp;
 
   var my = this;
   this.encrypt = function(cb) {

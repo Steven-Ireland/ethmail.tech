@@ -1,13 +1,28 @@
 
 .emailContainer {
-  padding: 10px;
   margin-right: 20px;
   float: right;
 
-  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 1px 0px rgba(0,0,0,0.75);
 
   width: 400px;
+}
+
+.emailContainer textarea {
   height: 400px;
+  resize:none;
+}
+
+.emailContainer .hero-body {
+  padding: 5px;
+}
+
+.is-bold {
+  font-weight: bold;
+}
+
+a {
+  color:inherit;
 }
 
 .hero-body {
@@ -16,17 +31,14 @@
 
 }
 
-.menu {
-  border-right: 1px solid black;
-  padding: 20px;
-  text-align: center;
-}
-.menu ul {
-  text-align: left;
+aside {
+  padding-left: 20px;
 }
 
 #compose {
   margin-bottom: 30px;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
 .inboxContainer {
@@ -37,11 +49,23 @@
   width: 100%;
   padding: 10px;
 
+  overflow: hidden;
   cursor: pointer;
 }
 
-.inboxLine:not(:last-child) {
+.inboxLine.level {
+  margin-bottom: 0px;
+}
+
+i.fa {
+  padding-right: 5px;
+}
+
+.inboxLine {
   border-bottom: 1px solid black;
+}
+.inboxLine:first-child {
+  border-top: 1px solid black;
 }
 
 .inboxLine:hover {
@@ -62,10 +86,6 @@
 
 #app {
   padding-top: 20px;
-}
-
-.inboxLine.level {
-  margin-bottom: 0px;
 }
 
 #inbox h2 {

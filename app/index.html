@@ -6,7 +6,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lockr/0.8.4/lockr.min.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.3/lodash.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js" charset="utf-8"></script>
+
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="./css/app.css">
@@ -30,39 +36,54 @@
     </div>
 
     <div id="app" v-cloak>
-      <div class="columns" v-if="inbox.ready">
-        <div class="column is-2">
-          <aside class="menu">
-            <a @click="compose" class="button is-dark is-outlined">Compose</a>
-            <!-- <ul class="menu-list">
-              <li><a href="#inbox">Inbox</a></li>
-            </ul> -->
-          </aside>
-        </div>
-        <div class="column is-10">
-          <div id="inbox">
-            <div v-if="inbox.currentEmail" class="content">
-              <h1>{{ inbox.currentEmail.subject }}</h1>
-              <p>{{ inbox.currentEmail.body }}</p>
-            </div>
-            <ul v-else>
-              <h2>Inbox</h2>
-              <li class="inboxLine level" v-for="(email,index) in inbox.unreadEmails" v-on:click="examineMail(email)">
-                <div class="level-left">
-                  <div class="level-item">
-                    <h3>{{ email.subject }}</h3>
-                  </div>
-                  <div class="level-item">
-                    <p>{{ email.body }}</p>
-                  </div>
-                </div>
-              </li>
+      <div v-if="inbox.ready">
+        <div class="columns">
+          <div class="column is-narrow">
+            <aside class="content">
+              <h2>Ethmail.tech</h2>
+            </aside>
+          </div>
+          <div class="column">
+            <template v-if="inbox.currentEmail">
+              <a class="button" @click="stopExamineMail"><i class="fa fa-long-arrow-left"></i>Back</a>
+              <a class="button" @click="replyMail"><i class="fa fa-mail-reply"></i>Reply</a>
+            </template>
+            <template v-else>
 
-              <!--<h3>Read</h3>
-              <li v-for="(email,index) in inbox.readEmails" v-on:click="examineMail(email)">
-                <h3>{{ email.subject }}</h3> <p>{{ email.body }}</p>
-              </li> -->
-            </ul>
+            </template>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-narrow">
+            <aside class="">
+              <a id="compose" @click="compose" class="button is-dark">Compose</a>
+            </aside>
+          </div>
+          <div class="column">
+            <div id="inbox">
+              <div v-if="inbox.currentEmail" class="content">
+                <h1>{{ inbox.currentEmail.subject }}</h1>
+                <p>{{ inbox.currentEmail.body }}</p>
+              </div>
+              <ul v-else>
+                <li class="inboxLine level" v-for="(email,index) in inbox.emails" v-on:click="examineMail(email)">
+                  <div class="level-left">
+                    <div class="level-item">
+                      <p>{{ email.addr }}</p>
+                    </div>
+                    <div class="level-item">
+                      <p class="is-bold">{{ email.subject }}</p>
+                    </div>
+                    <div class="level-item">
+                      <p>{{ email.body }}</p>
+                    </div>
+                  </div>
+                  <div class="level-right">
+                    <p>{{ moment(email.timestamp*1000).format("dddd, MMMM Do YYYY, h:mm:ss a") }}</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -111,7 +132,7 @@
 
             <p class="control has-addons">
               <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
-              <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }" :disabled="account.isGenerating">Generate</a>
+              <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }">Generate</a>
             </p>
             <p class="control">
               <label class="label">Public Key</label>
@@ -130,6 +151,16 @@
       </div>
       <div id="overlay">
         <div class="emailContainer" v-for="(email,index) in inbox.composing">
+          <div class="hero is-dark">
+            <div class="level hero-body">
+              <div class="level-left">
+                <p class="level-item">{{email.subject}}</p>
+              </div>
+              <div class="level-right">
+                <a class="level-item" @click="close(index)"><i class="fa fa-times"></i></a>
+              </div>
+            </div>
+          </div>
           <input class="input" placeholder="To" v-model="email.addr">
           <input class="input" placeholder="Subject" v-model="email.subject">
           <textarea class="textarea" placeholder="Body" v-model="email.body"></textarea>
