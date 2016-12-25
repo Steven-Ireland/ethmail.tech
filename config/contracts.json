@@ -1,0 +1,8 @@
+{ 
+	"default": { 
+		"gas": "auto", 
+		"contracts": { 
+	      	} 
+        } 
+} 
+
