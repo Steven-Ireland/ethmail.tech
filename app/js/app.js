@@ -16,6 +16,13 @@ $(document).ready(function() {
     });
 });
 
+function loadChat() {
+  EmbarkJS.Messages.listenTo({
+    topic: "ethmail"
+  }).then(function(msg) {
+    console.log(msg);
+  });
+}
 
 function loadMail() {
   var numUnread = 0;
@@ -29,23 +36,22 @@ function loadMail() {
         });
       }
 
-      web3.eth.filter("latest").watch(function(err, res) {
+      web3.eth.filter("latest").watch(_.debounce(function() {
         checkForMoreMail(numUnread).then(function(num) {
           numUnread = num;
         });
-      });
+      }, 1000));
     }
   });
 }
 
 function checkForMoreMail(lastCount) {
-  Mail.getUnreadSize().then(function(size) {
+  console.log("Calling check mail");
+  return Mail.getUnreadSize().then(function(size) {
     if (size > lastCount) {
-      console.log("Maiiiil time!");
       for (var i=lastCount; i < size; i++) {
         Mail.loadUnread(i).then(function(mail) {
           processMail(mail);
-          console.log("Found more mails!");
         });
       }
     }
@@ -88,7 +94,7 @@ function initializeVue() {
         currentEmail: false,
         composing: [],
         ready: false,
-        readNewMail: false,
+        readNewMail: true,
         readOldMail: false
       },
       account: {
@@ -99,6 +105,9 @@ function initializeVue() {
         publicKey: '',
         passphrase: '',
         password: ''
+      },
+      chat: {
+        conversations: []
       }
     },
     methods: {
@@ -150,6 +159,7 @@ function initializeVue() {
       login: function() {
         this.inbox.ready = true;
         loadMail();
+        loadChat();
       },
       compose: function() {
         this.inbox.composing.push(new Email('','',''));
@@ -170,6 +180,9 @@ function initializeVue() {
       },
       close: function(index) {
         app.inbox.composing.splice(index, 1);
+      },
+      openChat: function(conversation) {
+
       }
     },
     computed: {
@@ -209,4 +222,8 @@ function Email(addr, subj, body, timestamp) {
       }
     });
   };
+}
+
+function Conversation() {
+
 }

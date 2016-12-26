@@ -32,11 +32,21 @@
         <div class="container">
           <nav class="nav">
             <div class="nav-left">
-              <a class="is-brand is-large nav-item" href="/">E(th)-Mail</a>
+              <span class="is-light nav-item" >Latest Donations: </span>
             </div>
             <div class="nav-right">
-              <a class="nav-item is-light is-outlined" href="#about">Tweet</a>
-              <a class="nav-item is-light is-outlined" href="#signup">Login</a>
+              <span class="nav-item">
+                <a class="button is-light is-outlined"><i class="fa fa-github"></i>Github!</a>
+              </span>
+              <span class="nav-item">
+                <a class="button is-light is-outlined"><i class="fa fa-twitter"></i>Twitter!</a>
+              </span>
+              <span class="nav-item">
+                <a class="button is-light is-outlined"><i class="fa fa-reddit"></i>Reddit!</a>
+              </span>
+              <span class="nav-item">
+                <a class="button is-light is-outlined"><i class="fa fa-heart"></i>Donate!</a>
+              </span>
             </div>
           </nav>
         </div>
@@ -65,6 +75,13 @@
           <div class="column is-narrow">
             <aside class="">
               <a id="compose" @click="compose" class="button is-dark">Compose</a>
+
+              <hr/>
+              <ul id="chat">
+                <li v-for="conversation in chat.conversations" @click="openChat(conversation)">
+
+                </li>
+              </ul>
             </aside>
           </div>
           <div class="column">
@@ -74,7 +91,7 @@
                 <p>{{ inbox.currentEmail.body }}</p>
               </div>
               <ul v-else>
-                <li class="inboxLine level" v-for="(email,index) in inbox.emails" v-on:click="examineMail(email)">
+                <li class="inboxLine level" v-for="(email,index) in inbox.emails" @click="examineMail(email)">
                   <div class="level-left">
                     <div class="level-item">
                       <p>{{ email.addr }}</p>
@@ -100,8 +117,8 @@
           <h1 class="title">Login: {{account.address}}</h1>
           <h2 class="subtitle">I'm here to..</h2>
           <p class="control has-addons">
-            <a class="button" :class="{ 'is-primary': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
-            <a class="button" :class="{ 'is-primary': this.inbox.readOldMail }" @click="toggleOldMail">Read previously decrypted mail with my password</a>
+            <a class="button" :class="{ 'is-dark': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
+            <a class="button" :class="{ 'is-dark': this.inbox.readOldMail }" @click="toggleOldMail" v-show="false">Read previously decrypted mail with my password (coming soon)</a>
           </p>
 
           <p class="control" v-show="inbox.readOldMail">
@@ -120,7 +137,7 @@
           </p>
 
           <p class="control" v-show="inbox.readNewMail || inbox.readOldMail">
-            <a class="button is-primary" @click="login">Login</a>
+            <a class="button is-dark" @click="login">Login</a>
           </p>
         </div>
         <div id="register" class="container" v-if="!account.exists">
@@ -152,7 +169,7 @@
               <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea>
             </p>
             <p class="control" v-show="signupReady">
-              <a class="button is-primary" @click="signup">Register!</a>
+              <a class="button is-dark" @click="signup">Register!</a>
             </p>
           </div>
         </div>
