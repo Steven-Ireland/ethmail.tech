@@ -17,8 +17,29 @@
   padding: 5px;
 }
 
+
 .is-bold {
   font-weight: bold;
+}
+
+.has-outline {
+  box-shadow: 0px 0px 15px -2px grey;
+}
+
+.modal-card-head {
+  padding: 0px;
+}
+
+.modal-card-head .hero-body {
+  padding: 5px;
+}
+
+.modal-card-head .hero {
+  width: 100%;
+}
+
+.modal-background {
+  background-color: inherit;
 }
 
 a {
@@ -83,6 +104,10 @@ i.fa {
   background-color: lightgrey;
 }
 
+.fa.inputText {
+  color: inherit;
+}
+
 #login {
   margin-top: 20px;
 }
@@ -95,10 +120,15 @@ i.fa {
   width: 100%;
 }
 
-#app {
-  padding-top: 20px;
+#title {
+  margin-bottom: 20px;
 }
 
 #inbox h2 {
   margin-bottom: 20px;
+}
+
+#donate .modal-body {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }

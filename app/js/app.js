@@ -89,6 +89,10 @@ function initializeVue() {
   app = new Vue({
     el: '#app',
     data: {
+      meta: {
+        isDonating: false,
+        donateAmount: 1
+      },
       inbox: {
         emails: [],
         currentEmail: false,
@@ -183,6 +187,23 @@ function initializeVue() {
       },
       openChat: function(conversation) {
 
+      },
+      toggleDonating: function() {
+        this.meta.isDonating = !this.meta.isDonating;
+      },
+      setDonateAmount: function(amt) {
+        this.meta.donateAmount = amt;
+      },
+      donate: function() {
+        if (this.meta.donateAmount>0) {
+          web3.eth.sendTransaction({
+            to: Mail.address,
+            from: app.account.address,
+            value: web3.toWei(app.meta.donateAmount, "ether")
+          }, function() {
+            app.meta.isDonating = false;
+          });
+        }
       }
     },
     computed: {

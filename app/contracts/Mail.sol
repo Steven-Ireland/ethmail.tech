@@ -7,6 +7,12 @@ contract Mail {
     owner = msg.sender;
   }
 
+  function changeOwner(address newOwner) onlyOwner {
+    if (msg.sender == owner) {
+      owner = newOwner;
+    } else throw;
+  }
+
   struct Email {
     address from;
     string content;
@@ -39,6 +45,20 @@ contract Mail {
 
   function register(string public_key) {
     users[msg.sender].public_key = public_key;
+  }
+
+  function savePreferences(string preferences) {
+    if (userExists(msg.sender)) {
+      users[msg.sender].preferences = preferences;
+    }
+  }
+
+  function loadPreferences() constant returns (string) {
+    if (userExists(msg.sender)) {
+      return users[msg.sender].preferences;
+    } else {
+      return 'An Error has Occured';
+    }
   }
 
   function loadRead(uint recent) constant returns(address, string) {

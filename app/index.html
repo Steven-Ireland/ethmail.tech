@@ -27,33 +27,27 @@
     <script src="./js/app.js"></script>
   </head>
   <body>
-    <div class="hero is-dark">
-      <div class="hero-head">
-        <div class="container">
-          <nav class="nav">
-            <div class="nav-left">
-              <span class="is-light nav-item" >Latest Donations: </span>
-            </div>
-            <div class="nav-right">
-              <span class="nav-item">
-                <a class="button is-light is-outlined"><i class="fa fa-github"></i>Github!</a>
-              </span>
-              <span class="nav-item">
-                <a class="button is-light is-outlined"><i class="fa fa-twitter"></i>Twitter!</a>
-              </span>
-              <span class="nav-item">
-                <a class="button is-light is-outlined"><i class="fa fa-reddit"></i>Reddit!</a>
-              </span>
-              <span class="nav-item">
-                <a class="button is-light is-outlined"><i class="fa fa-heart"></i>Donate!</a>
-              </span>
-            </div>
-          </nav>
-        </div>
-      </div>
-    </div>
 
     <div id="app" v-cloak>
+      <div id="title" class="hero is-dark">
+        <div class="hero-head">
+          <div class="container">
+            <nav class="nav">
+              <div class="nav-left">
+                <span class="is-light nav-item" >Latest Donations: </span>
+              </div>
+              <div class="nav-right">
+                <span class="nav-item">
+                  <a class="button is-light is-outlined" href="https://github.com/Steven-Ireland/ethmail"><i class="fa fa-github"></i>Github!</a>
+                </span>
+                <span class="nav-item">
+                  <a class="button is-light is-outlined" @click="toggleDonating"><i class="fa fa-heart"></i>Donate!</a>
+                </span>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
       <div v-if="inbox.ready">
         <div class="columns">
           <div class="column is-narrow">
@@ -175,11 +169,11 @@
         </div>
       </div>
       <div id="overlay">
-        <div class="emailContainer" v-for="(email,index) in inbox.composing">
+        <div class="emailContainer has-outline" v-for="(email,index) in inbox.composing">
           <div class="hero is-dark">
             <div class="level hero-body">
-              <div class="level-left">
-                <p class="level-item">{{email.subject}}</p>
+              <div class="level-item has-text-centered">
+                  <p class="">{{email.subject}}</p>
               </div>
               <div class="level-right">
                 <a class="level-item" @click="close(index)"><i class="fa fa-times"></i></a>
@@ -190,6 +184,39 @@
           <input class="input" placeholder="Subject" v-model="email.subject">
           <textarea class="textarea" placeholder="Body" v-model="email.body"></textarea>
           <a class="button is-dark" :class="{'is-loading': email.loading}" @click="send(email, index)">Send</a>
+        </div>
+
+        <div id="donate" class="modal" :class="{'is-active' : meta.isDonating}">
+          <div class="modal-background" @click="toggleDonating">
+          </div>
+          <div class="modal-card has-outline">
+            <div class="modal-card-head">
+              <div class="hero is-dark">
+                <div class="level hero-body">
+                  <div class="level-item has-text-centered">
+                    <p>Donate</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-card-body">
+              <div class="content">
+                <p>Thanks so much for considering to donate. It fuels development of the site and promotes the ethereum ecosystem as a whole!</p>
+                <div class="control has-addons">
+                  <a class="button" :class="{'is-dark': meta.donateAmount == .5}" @click="setDonateAmount(.5)">.5</a>
+                  <a class="button" :class="{'is-dark': meta.donateAmount == 1}" @click="setDonateAmount(1)">1</a>
+                  <a class="button" :class="{'is-dark': meta.donateAmount == 3}" @click="setDonateAmount(3)">3</a>
+                  <a class="button" :class="{'is-dark': meta.donateAmount == 5}" @click="setDonateAmount(5)">5</a>
+                  <a class="button" :class="{'is-dark': meta.donateAmount == 10}" @click="setDonateAmount(10)">10</a>
+                  <p class="control has-icon has-addons">
+                    <input class="input" v-model="meta.donateAmount"></input>
+                    <i class="fa">Eth</i>
+                    <a class="button is-dark is-outline" @click="donate">Donate</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
