@@ -17,6 +17,9 @@
   padding: 5px;
 }
 
+.emailContainer .box {
+  padding: 0px;
+}
 
 .is-bold {
   font-weight: bold;

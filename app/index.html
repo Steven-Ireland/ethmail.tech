@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>EthMail.tech</title>
+    <title>Ethmail.tech</title>
     <script src="js/openpgp.min.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.6/vue.min.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lockr/0.8.4/lockr.min.js" charset="utf-8"></script>
@@ -40,6 +40,9 @@
                   {{meta.lastDonation.from}}</span>
               </div>
               <div class="nav-right">
+                <span class="nav-item">
+                  <a class="button is-light is-outlined" @click="suggest"><i class="fa fa-pencil-square-o"></i>Feedback!</a>
+                </span>
                 <span class="nav-item">
                   <a class="button is-light is-outlined" href="https://github.com/Steven-Ireland/ethmail"><i class="fa fa-github"></i>Github!</a>
                 </span>
@@ -186,7 +189,9 @@
           <input class="input" placeholder="To" v-model="email.addr">
           <input class="input" placeholder="Subject" v-model="email.subject">
           <textarea class="textarea" placeholder="Body" v-model="email.body"></textarea>
-          <a class="button is-dark" :class="{'is-loading': email.loading}" @click="send(email, index)">Send</a>
+          <div>
+            <a class="button is-dark" :class="{'is-loading': email.loading}" @click="send(email, index)">Send</a>
+          </div>
         </div>
 
         <div id="donate" class="modal" :class="{'is-active' : meta.isDonating}">

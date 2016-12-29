@@ -222,6 +222,11 @@ function initializeVue() {
             app.meta.isDonating = false;
           });
         }
+      },
+      suggest: function() {
+        Mail.owner().then(function(owner) {
+          app.inbox.composing.push(new Email(owner, 'Ethmail.tech Feedback', 'Hey Steve, \n\nI really like X about Y, but Z could really use some work.\n\nThanks!'));
+        });
       }
     },
     computed: {
