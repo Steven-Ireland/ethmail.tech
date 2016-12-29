@@ -1,5 +1,6 @@
 /* jshint -W083 */
 /* jshint -W004 */
+/* jshint -W041 */
 
 var mail = {};
 var app = {};
@@ -45,6 +46,18 @@ function loadMail() {
           numUnread = num;
         });
       }, 1000));
+    }
+
+    if (size == 0) {
+      // make a starter email
+      Mail.owner().then(function(owner) {
+        app.inbox.emails.push(new Email(
+          owner,
+          'Welcome to Ethmail.tech!',
+          'If you have any questions or concerns feel free to reply to this email or press the \'feedback\' button in the top right.\n\nWelcome to the web3!',
+          new Date().getTime()
+        ));
+      });
     }
   });
 }

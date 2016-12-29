@@ -64,8 +64,17 @@ a {
   white-space: pre-wrap;
 }
 
+.is-underlined {
+  border-bottom: 1px solid lightgrey;
+  padding-bottom: 10px;
+}
+
 aside {
   padding-left: 20px;
+}
+
+.columns:last-child {
+  margin-bottom: 0px;
 }
 
 #compose {

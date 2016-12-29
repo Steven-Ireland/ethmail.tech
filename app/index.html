@@ -54,7 +54,7 @@
           </div>
         </div>
       </div>
-      <div v-if="inbox.ready">
+      <div>
         <div class="columns">
           <div class="column is-narrow">
             <aside class="content">
@@ -84,10 +84,11 @@
               </ul>
             </aside>
           </div>
-          <div class="column">
+          <div class="column" v-if="inbox.ready">
             <div id="inbox">
-              <div v-if="inbox.currentEmail" class="content examine">
-                <h1>{{ inbox.currentEmail.subject }}</h1>
+              <div v-if="inbox.currentEmail" class="examine">
+                <p class="title is-3">{{ inbox.currentEmail.subject }}</p>
+                <p class="subtitle is-6 is-underlined">{{inbox.currentEmail.addr}}</p>
                 <p>{{ inbox.currentEmail.body }}</p>
               </div>
               <ul v-else>
@@ -110,67 +111,65 @@
               </ul>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="" v-else>
-        <div id="login" class="container" v-if="account.exists">
-          <h1 class="title">Login: {{account.address}}</h1>
-          <h2 class="subtitle">I'm here to..</h2>
-          <p class="control has-addons">
-            <a class="button" :class="{ 'is-dark': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
-            <a class="button" :class="{ 'is-dark': this.inbox.readOldMail }" @click="toggleOldMail" v-show="false">Read previously decrypted mail with my password (coming soon)</a>
-          </p>
+          <div class="column" v-else>
+            <div id="login" class="container" v-if="account.exists">
+              <h1 class="title">Login: {{account.address}}</h1>
+              <h2 class="subtitle">I'm here to..</h2>
+              <p class="control has-addons">
+                <a class="button" :class="{ 'is-dark': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
+                <a class="button" :class="{ 'is-dark': this.inbox.readOldMail }" @click="toggleOldMail" v-show="false">Read previously decrypted mail with my password (coming soon)</a>
+              </p>
 
-          <p class="control" v-show="inbox.readOldMail">
-            <label class="label" >Password: </label>
-            <input type="password" v-model="account.password">
-          </p>
+              <p class="control" v-show="inbox.readOldMail">
+                <label class="label" >Password: </label>
+                <input type="password" v-model="account.password">
+              </p>
 
-          <p class="control" v-show="inbox.readNewMail">
-            <label class="label">PGP Private Key: </label>
-            <input type="file" ref="keyfile" @change="loadKey"></input>
-            <textarea class="textarea" v-model="account.privateKey"></textarea>
-          </p>
-          <p class="control" v-show="inbox.readNewMail">
-            <label class="label" >PGP Passphrase (optional): </label>
-            <input type="password" v-model="account.passphrase">
-          </p>
+              <p class="control" v-show="inbox.readNewMail">
+                <label class="label">PGP Private Key: </label>
+                <input type="file" ref="keyfile" @change="loadKey"></input>
+                <textarea class="textarea" v-model="account.privateKey"></textarea>
+              </p>
+              <p class="control" v-show="inbox.readNewMail">
+                <label class="label" >PGP Passphrase (optional): </label>
+                <input type="password" v-model="account.passphrase">
+              </p>
 
-          <p class="control" v-show="inbox.readNewMail || inbox.readOldMail">
-            <a class="button is-dark" @click="login">Login</a>
-          </p>
-        </div>
-        <div id="register" class="container" v-if="!account.exists">
-          <div class="content">
-            <p>In order to "create" your account, we must store a PGP Public Key
-              that maps to your ethereum address</p>
+              <p class="control" v-show="inbox.readNewMail || inbox.readOldMail">
+                <a class="button is-dark" @click="login">Login</a>
+              </p>
+            </div>
+            <div id="register" class="container" v-if="!account.exists">
+              <div class="content">
+                <p>In order to recieve mail at your address ({{account.address}}), we must store a PGP Public Key
+                  that maps to your ethereum address</p>
 
-            <p>This key is used to encrypt any emails sent to you, such that
-              only you can read them with your PGP Private key. Once you send an email, it belongs to that
-              address, encrypted with their PGP Public Key, and only able to be
-              decrypted with their PGP Private Key. If you lose your private key or forget its associated passphrase,
-              you will lose all incoming mail which was encrypted to it. </p>
-            <p>You will have the opportunity to mark your incoming mail as read and re-encrypt it with a familiar
-              password. Doing so will mitigate the loss of losing access to your private key and allow you to check
-              previously read mail without it.</p>
-            <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own (may take a minute).</p>
+                <p>This key is used to encrypt any emails sent to you, such that
+                  only you can read them with your PGP Private key. Once you send an email, it belongs to that
+                  address, encrypted with their PGP Public Key, and only able to be
+                  decrypted with their PGP Private Key. If you lose your private key or forget its associated passphrase,
+                  you will lose all incoming mail which was encrypted to it. </p>
+                <p>You can send mail without creating a public key, but you cannot recieve any.</p>
+                <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own (may take a minute).</p>
 
-            <p class="control has-addons">
-              <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
-              <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }">Generate</a>
-            </p>
-            <p class="control">
-              <label class="label">Public Key</label>
-              <textarea class="textarea" v-model="account.publicKey" :disabled="account.isGenerating"></textarea>
-            </p>
-            <p class="control">
-              <label class="label">Private Key</label>
-              <a class="button" :href="keyDownloadLink()" v-show="account.privateKey.length>0">Download</a>
-              <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea>
-            </p>
-            <p class="control" v-show="signupReady">
-              <a class="button is-dark" @click="signup">Register!</a>
-            </p>
+                <p class="control has-addons">
+                  <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
+                  <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }">Generate</a>
+                </p>
+                <p class="control">
+                  <label class="label">Public Key</label>
+                  <textarea class="textarea" v-model="account.publicKey" :disabled="account.isGenerating"></textarea>
+                </p>
+                <p class="control" v-show="account.privateKey.length>0">
+                  <label class="label">Private Key</label>
+                  <a class="button" :href="keyDownloadLink()" >Download</a>
+                  <!-- <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea> -->
+                </p>
+                <p class="control" v-show="signupReady">
+                  <a class="button is-dark" @click="signup">Register!</a>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
