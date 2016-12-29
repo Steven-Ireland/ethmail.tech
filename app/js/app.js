@@ -222,12 +222,6 @@ function initializeVue() {
             app.meta.isDonating = false;
           });
         }
-      },
-      iconify: function(addr) {
-        return blockies.create({
-          seed: addr,
-          scale: 2
-        });
       }
     },
     computed: {
