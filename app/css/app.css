@@ -26,6 +26,11 @@
   box-shadow: 0px 0px 15px -2px grey;
 }
 
+.nav-right {
+  flex-grow: inherit;
+  flex-shrink: inherit;
+}
+
 .modal-card-head {
   padding: 0px;
 }

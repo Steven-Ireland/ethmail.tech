@@ -10,10 +10,14 @@ $(document).ready(function() {
 
   initializeVue();
 
-  Mail.userExists(app.account.address)
-    .then(function(doesExist) {
+  Mail.userExists(app.account.address).then(function(doesExist) {
       app.account.exists = doesExist;
-    });
+  });
+
+  checkForMoreDonations();
+  web3.eth.filter("latest").watch(function() {
+    checkForMoreDonations();
+  });
 });
 
 function loadChat() {
@@ -46,7 +50,6 @@ function loadMail() {
 }
 
 function checkForMoreMail(lastCount) {
-  console.log("Calling check mail");
   return Mail.getUnreadSize().then(function(size) {
     if (size > lastCount) {
       for (var i=lastCount; i < size; i++) {
@@ -56,6 +59,16 @@ function checkForMoreMail(lastCount) {
       }
     }
     return size;
+  });
+}
+
+function checkForMoreDonations() {
+  return Mail.lastDonation().then(function(donation) {
+    var from = donation[0];
+    var amount = donation[1];
+
+    app.meta.lastDonation.from = from;
+    app.meta.lastDonation.amount = amount;
   });
 }
 
@@ -91,7 +104,12 @@ function initializeVue() {
     data: {
       meta: {
         isDonating: false,
-        donateAmount: 1
+        donateAmount: 1,
+        lastDonation: {
+          amount: 0,
+          from: '0x0',
+          loaded: false
+        }
       },
       inbox: {
         emails: [],
@@ -204,6 +222,12 @@ function initializeVue() {
             app.meta.isDonating = false;
           });
         }
+      },
+      iconify: function(addr) {
+        return blockies.create({
+          seed: addr,
+          scale: 2
+        });
       }
     },
     computed: {

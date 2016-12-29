@@ -34,7 +34,10 @@
           <div class="container">
             <nav class="nav">
               <div class="nav-left">
-                <span class="is-light nav-item" >Latest Donations: </span>
+                <span class="is-light nav-item" >Latest Donation: </span>
+                <span class="is-light nav-item" v-html>
+                  {{Number(web3.fromWei(meta.lastDonation.amount, "ether"))}} Eth courtesy of
+                  {{meta.lastDonation.from}}</span>
               </div>
               <div class="nav-right">
                 <span class="nav-item">

@@ -26,6 +26,12 @@ contract Mail {
     Email[] unread;
   }
 
+  struct Donation {
+    address from;
+    uint amount;
+    uint blockNumber;
+  }
+
   mapping (address => EmailAddr) users;
 
   modifier onlyOwner {
@@ -33,8 +39,13 @@ contract Mail {
     _;
   }
 
+  Donation public lastDonation;
   function () payable {
-    // thanks for your contribution :)
+    if (lastDonation.amount < msg.value ||
+        lastDonation.blockNumber < block.number) {
+
+      lastDonation = Donation(msg.sender, msg.value, block.number);
+    }
   }
 
   function retrieveDonations() onlyOwner {
