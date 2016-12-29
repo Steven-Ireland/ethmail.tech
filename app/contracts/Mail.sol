@@ -8,9 +8,34 @@ contract Mail {
   }
 
   function changeOwner(address newOwner) onlyOwner {
-    if (msg.sender == owner) {
-      owner = newOwner;
-    } else throw;
+    owner = newOwner;
+  }
+
+  modifier onlyOwner {
+    if (msg.sender != owner) throw;
+    _;
+  }
+
+  // The cost here can be two-fold, but I see one use in particular: stopping spam.
+  // If there is nontrivial-en-masse cost with sending emails (which may take some adjusting!) spamming becomes unprofitable.
+  // See: Teslas's charge for sitting at a supercharger station.
+  uint cost = 0;
+  function changeCost(uint newCost) onlyOwner {
+    cost = newCost;
+  }
+
+  modifier costs {
+    if (msg.value >= cost) {
+      _;
+      uint diff = msg.value - cost;
+      if (diff > 0) {
+        if (!msg.sender.send(diff)) {
+          throw;
+        }
+      }
+    } else {
+      throw;
+    }
   }
 
   struct Email {
@@ -33,11 +58,6 @@ contract Mail {
   }
 
   mapping (address => EmailAddr) users;
-
-  modifier onlyOwner {
-    if (msg.sender != owner) throw;
-    _;
-  }
 
   Donation public lastDonation;
   function () payable {
@@ -107,7 +127,7 @@ contract Mail {
     }
   }
 
-  function sendMail(address addr, string hash) {
+  function sendMail(address addr, string hash) payable costs {
     if (userExists(addr)) {
       users[addr].unread.push(Email(msg.sender, hash, block.timestamp));
     } else throw;
