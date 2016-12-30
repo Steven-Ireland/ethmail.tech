@@ -164,9 +164,9 @@
                 <p class="control" v-show="account.privateKey.length>0">
                   <label class="label">Private Key</label>
                   <a class="button" :href="keyDownloadLink()" >Download</a>
-                  <!-- <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea> -->
+                  <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea>
                 </p>
-                <p class="control" v-show="signupReady">
+                <p class="control" v-show="account.publicKey.length>0">
                   <a class="button is-dark" @click="signup">Register!</a>
                 </p>
               </div>
