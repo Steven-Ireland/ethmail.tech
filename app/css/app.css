@@ -134,7 +134,12 @@ i.fa {
   right: 0;
   bottom: 0;
 
+  pointer-events: none;
   width: 100%;
+}
+
+#overlay * {
+  pointer-events: all;
 }
 
 #title {
