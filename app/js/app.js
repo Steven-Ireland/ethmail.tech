@@ -235,7 +235,7 @@ function initializeVue() {
     },
     computed: {
       signupReady: function() {
-        return this.account.publicKey.length > 0 && this.account.privateKey.length > 0;
+        return this.account.publicKey.length > 0;
       }
     }
   });
