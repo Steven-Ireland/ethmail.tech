@@ -186,7 +186,6 @@ function initializeVue() {
       login: function() {
         this.inbox.ready = true;
         loadMail();
-        loadChat();
       },
       compose: function() {
         this.inbox.composing.push(new Email('','',''));
