@@ -8,7 +8,7 @@ contract Mail {
   }
 
   function changeOwner(address newOwner) onlyOwner {
-    owner = newOwner;
+  owner = newOwner;
   }
 
   modifier onlyOwner {
@@ -47,7 +47,6 @@ contract Mail {
   struct EmailAddr {
     string public_key;
     string preferences;
-    Email[] read;
     Email[] unread;
   }
 
@@ -92,15 +91,6 @@ contract Mail {
     }
   }
 
-  function loadRead(uint recent) constant returns(address, string) {
-    if (userExists(msg.sender)) {
-      return (users[msg.sender].read[recent].from,
-              users[msg.sender].read[recent].content);
-    } else {
-      return (owner, "An Error has Occured");
-    }
-  }
-
   function loadUnread(uint recent) constant returns(address, string, uint) {
     if (userExists(msg.sender)) {
       return (users[msg.sender].unread[recent].from,
@@ -114,14 +104,6 @@ contract Mail {
   function getUnreadSize() constant returns (uint) {
     if (userExists(msg.sender)) {
       return users[msg.sender].unread.length;
-    } else {
-      return 0;
-    }
-  }
-
-  function getReadSize() constant returns (uint) {
-    if (userExists(msg.sender)) {
-      return users[msg.sender].read.length;
     } else {
       return 0;
     }
