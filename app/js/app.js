@@ -47,7 +47,7 @@ function loadMail() {
           owner,
           'Welcome to Ethmail.tech!',
           'If you have any questions or concerns feel free to reply to this email or press the \'feedback\' button in the top right.\n\nWelcome to the web3!',
-          new Date().getTime()
+          new Date().getTime()/1000
         ));
       });
     }
