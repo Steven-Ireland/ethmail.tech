@@ -21,14 +21,6 @@ $(document).ready(function() {
   });
 });
 
-function loadChat() {
-  EmbarkJS.Messages.listenTo({
-    topic: "ethmail"
-  }).then(function(msg) {
-    console.log(msg);
-  });
-}
-
 function loadMail() {
   var numUnread = 0;
   Mail.getUnreadSize().then(function(size) {
