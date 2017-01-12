@@ -7,7 +7,7 @@
     "js/openpgp.min.js": ["app/js/openpgp.min.js"],
     "js/openpgp.worker.min.js": ["app/js/openpgp.worker.min.js"],
     "index.html": "app/index.html",
-    "portal": "app/portal.html"
+    "portal.html": "app/portal.html"
   },
   "buildDir": "dist/",
   "config": "config/"
