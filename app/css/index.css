@@ -2,10 +2,6 @@ canvas {
 	margin-bottom: 20px;
 }
 
-.hero {
-	background-color: inherit;
-}
-
-body {
+.transparant, .hero {
 	background-color: #F5F5F5;
 }
