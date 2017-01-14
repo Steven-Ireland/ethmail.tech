@@ -81,7 +81,7 @@ function processMail(mail) {
   var from = mail[0];
   var content = mail[1];
   var timestamp = mail[2];
-  decryptMail(content, false, app.account.privateKey)
+  decryptMail(content, false, app.account.privateKey, app.account.passphrase)
     .then(function(decryptedMail) {
       var maildata = JSON.parse(decryptedMail);
       var email = new Email(from, maildata.subject, maildata.body, timestamp);
@@ -91,16 +91,24 @@ function processMail(mail) {
     });
 }
 
-function decryptMail(encryptedMail, isSymmetric, keyOrPassword) {
+function decryptMail(encryptedMail, isSymmetric, keyOrPassword, passphrase) {
   var pgpOpts = {};
   pgpOpts.message= openpgp.message.readArmored(encryptedMail);
 
   if (isSymmetric) { pgpOpts.password = keyOrPassword; }
   else { pgpOpts.privateKey = openpgp.key.readArmored(keyOrPassword).keys[0]; }
 
+  decryptKey(pgpOpts.privateKey, passphrase);
+
   return openpgp.decrypt(pgpOpts).then(function(decryptedContent) {
     return decryptedContent.data;
   });
+}
+
+function decryptKey(privateKey, passphrase) {
+  if (passphrase.length > 0) {
+    privateKey.decrypt(passphrase);
+  }
 }
 
 function initializeVue() {
@@ -185,6 +193,7 @@ function initializeVue() {
       },
       login: function() {
         this.inbox.ready = true;
+
         loadMail();
       },
       compose: function() {
