@@ -8,6 +8,8 @@ I welcome pull requests and bug reports.
 
 To Use: Visit the site using the Mist browser or Metamask, generate or supply a PGP public key to enable your account to recieve mail.
 
+To Build: Install embark and run 'embark run' to build and deploy.
+
 ![Ethmail screenshot](http://i.imgur.com/fLDZ7sd.png)
 
 ![Ethmail screenshot](http://i.imgur.com/el6r5G2.png)
