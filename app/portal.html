@@ -184,11 +184,13 @@
               </div>
             </div>
           </div>
-          <input class="input" placeholder="To" v-model="email.addr">
-          <input class="input" placeholder="Subject" v-model="email.subject">
-          <textarea class="textarea" placeholder="Body" v-model="email.body"></textarea>
-          <div>
+          <input class="input" placeholder="To" v-model="email.addr"
+            :class="{ 'is-danger': !ethereumjsUtil.isValidAddress(email.addr), 'is-success': ethereumjsUtil.isValidAddress(email.addr) }">
+          <input class="input is-light" placeholder="Subject" v-model="email.subject">
+          <textarea class="textarea is-light" placeholder="Body" v-model="email.body"></textarea>
+          <div class="level">
             <a class="button is-dark" :class="{'is-loading': email.loading}" @click="send(email, index)">Send</a>
+            <span class="is-danger level-item">{{email.error}}</span>
           </div>
         </div>
 

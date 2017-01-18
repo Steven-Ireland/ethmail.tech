@@ -206,11 +206,22 @@ function initializeVue() {
       },
       send: function(mail, index) {
         mail.loading = true;
-        mail.encrypt(function(encryptedMail) {
-          Mail.sendMail(mail.addr, encryptedMail).then(function() {
+
+        Mail.userExists(mail.addr).then(function(exists) {
+          if (exists) {
+            mail.encrypt(function(encryptedMail) {
+              Mail.sendMail(mail.addr, encryptedMail).then(function() {
+                mail.loading = false;
+                app.close(index);
+              });
+            });
+          } else {
             mail.loading = false;
-            app.close(index);
-          });
+            mail.error = "That user has no registered public key";
+            setTimeout(function() {
+              mail.error = "";
+            }, 5000);
+          }
         });
       },
       close: function(index) {
@@ -253,6 +264,7 @@ function Email(addr, subj, body, timestamp) {
   this.loading = false;
   this.read=true;
   this.timestamp=timestamp;
+  this.error = "";
 
   var my = this;
   this.encrypt = function(cb) {
@@ -274,8 +286,4 @@ function Email(addr, subj, body, timestamp) {
       }
     });
   };
-}
-
-function Conversation() {
-
 }
