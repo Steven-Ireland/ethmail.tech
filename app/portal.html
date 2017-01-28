@@ -23,207 +23,216 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="./css/app.css">
-    <script src="./js/app.js"></script>
+    <script src="./app.js"></script>
   </head>
   <body>
 
     <div id="app" v-cloak>
-      <div id="title" class="hero is-dark">
-        <div class="hero-head">
-          <div class="container">
-            <nav class="nav">
-              <div class="nav-left">
-                <span class="is-light nav-item" >Latest Donation: </span>
-                <span class="is-light nav-item">
-                  {{Number(web3.fromWei(meta.lastDonation.amount, "ether"))}} Eth courtesy of
-                  {{meta.lastDonation.from}}</span>
-              </div>
-              <div class="nav-right">
-                <span class="nav-item">
-                  <a class="button is-light is-outlined" @click="suggest"><i class="fa fa-pencil-square-o"></i> Feedback!</a>
-                </span>
-                <span class="nav-item">
-                  <a class="button is-light is-outlined" href="https://github.com/Steven-Ireland/ethmail"><i class="fa fa-github"></i> Github!</a>
-                </span>
-                <span class="nav-item">
-                  <a class="button is-light is-outlined" @click="toggleDonating"><i class="fa fa-heart"></i> Donate!</a>
-                </span>
-              </div>
-            </nav>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="columns">
-          <div class="column is-narrow">
-            <aside class="content">
-              <h2>Ethmail.tech</h2>
-            </aside>
-          </div>
-          <div class="column">
-            <template v-if="inbox.currentEmail">
-              <a class="button" @click="stopExamineMail"><i class="fa fa-long-arrow-left"></i>Back</a>
-              <a class="button" @click="replyMail"><i class="fa fa-mail-reply"></i>Reply</a>
-            </template>
-            <template v-else>
-
-            </template>
-          </div>
-        </div>
-        <div class="columns">
-          <div class="column is-narrow">
-            <aside class="">
-              <a id="compose" @click="compose" class="button is-dark">Compose</a>
-
-              <hr/>
-              <ul id="chat">
-                <li v-for="conversation in chat.conversations" @click="openChat(conversation)">
-
-                </li>
-              </ul>
-            </aside>
-          </div>
-          <div class="column" v-if="inbox.ready">
-            <div id="inbox">
-              <div v-if="inbox.currentEmail" class="examine">
-                <p class="title is-3">{{ inbox.currentEmail.subject }}</p>
-                <p class="subtitle is-6 is-underlined">{{inbox.currentEmail.addr}}</p>
-                <p>{{ inbox.currentEmail.body }}</p>
-              </div>
-              <ul v-else>
-                <li class="inboxLine level" v-for="(email,index) in inbox.emails" @click="examineMail(email)">
-                  <div class="level-left">
-                    <div class="level-item">
-                      <p>{{ email.addr }}</p>
-                    </div>
-                    <div class="level-item">
-                      <p class="is-bold">{{ email.subject }}</p>
-                    </div>
-                    <div class="level-item">
-                      <p class="overflow-ellipsis">{{ email.body }}</p>
-                    </div>
+      <div class="" v-if="meta.web3">
+        <div id="title" class="hero is-dark">
+          <div class="hero-head">
+            <div class="container">
+              <nav class="nav">
+                <div class="nav-left">
+                  <span class="is-light nav-item" >Latest Donation: </span>
+                  <span class="is-light nav-item">
+                    {{Number(meta.lastDonation.amount / 1000000000000000000)}} Eth courtesy of
+                    {{meta.lastDonation.from}}</span>
                   </div>
-                  <div class="level-right">
-                    <p>{{ moment(email.timestamp*1000).format("dddd, MMMM Do YYYY, h:mm:ss a") }}</p>
+                  <div class="nav-right">
+                    <span class="nav-item">
+                      <a class="button is-light is-outlined" @click="suggest"><i class="fa fa-pencil-square-o"></i> Feedback!</a>
+                    </span>
+                    <span class="nav-item">
+                      <a class="button is-light is-outlined" href="https://github.com/Steven-Ireland/ethmail"><i class="fa fa-github"></i> Github!</a>
+                    </span>
+                    <span class="nav-item">
+                      <a class="button is-light is-outlined" @click="toggleDonating"><i class="fa fa-heart"></i> Donate!</a>
+                    </span>
                   </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="column" v-else>
-            <div id="login" class="container" v-if="account.exists">
-              <h1 class="title">Login: {{account.address}}</h1>
-              <h2 class="subtitle">I'm here to..</h2>
-              <p class="control has-addons">
-                <a class="button" :class="{ 'is-dark': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
-                <a class="button" :class="{ 'is-dark': this.inbox.readOldMail }" @click="toggleOldMail" v-show="false">Read previously decrypted mail with my password (coming soon)</a>
-              </p>
-
-              <p class="control" v-show="inbox.readOldMail">
-                <label class="label" >Password: </label>
-                <input type="password" v-model="account.password">
-              </p>
-
-              <p class="control" v-show="inbox.readNewMail">
-                <label class="label">PGP Private Key: </label>
-                <input type="file" ref="keyfile" @change="loadKey"></input>
-                <textarea class="textarea" v-model="account.privateKey"></textarea>
-              </p>
-              <p class="control" v-show="inbox.readNewMail">
-                <label class="label" >PGP Passphrase (optional): </label>
-                <input type="password" v-model="account.passphrase">
-              </p>
-
-              <p class="control" v-show="inbox.readNewMail || inbox.readOldMail">
-                <a class="button is-dark" @click="login">Login</a>
-              </p>
-            </div>
-            <div id="register" class="container" v-if="!account.exists">
-              <div class="content">
-                <p>In order to recieve mail at your address ({{account.address}}), we must store a PGP Public Key
-                  that maps to your ethereum address</p>
-
-                <p>This key is used to encrypt any emails sent to you, such that
-                  only you can read them with your PGP Private key. Once you send an email, it belongs to that
-                  address, encrypted with their PGP Public Key, and only able to be
-                  decrypted with their PGP Private Key. If you lose your private key or forget its associated passphrase,
-                  you will lose all incoming mail which was encrypted to it. </p>
-                <p>You can send mail without creating a public key, but you cannot recieve any.</p>
-                <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own (may take a minute).</p>
-
-                <p class="control has-addons">
-                  <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
-                  <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }">Generate</a>
-                </p>
-                <p class="control">
-                  <label class="label">Public Key</label>
-                  <textarea class="textarea" v-model="account.publicKey" :disabled="account.isGenerating"></textarea>
-                </p>
-                <p class="control" v-show="account.privateKey.length>0">
-                  <label class="label">Private Key</label>
-                  <a class="button" :href="keyDownloadLink()" >Download</a>
-                  <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea>
-                </p>
-                <p class="control" v-show="account.publicKey.length>0">
-                  <a class="button is-dark" @click="signup">Register!</a>
-                </p>
+                </nav>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div id="overlay">
-        <div class="emailContainer has-outline" v-for="(email,index) in inbox.composing">
-          <div class="hero is-dark">
-            <div class="level hero-body">
-              <div class="level-item has-text-centered">
-                  <p class="">{{email.subject}}</p>
+          <div>
+            <div class="columns">
+              <div class="column is-narrow">
+                <aside class="content">
+                  <h2>Ethmail.tech</h2>
+                </aside>
               </div>
-              <div class="level-right">
-                <a class="level-item" @click="close(index)"><i class="fa fa-times"></i></a>
+              <div class="column">
+                <template v-if="inbox.currentEmail">
+                  <a class="button" @click="stopExamineMail"><i class="fa fa-long-arrow-left"></i>Back</a>
+                  <a class="button" @click="replyMail"><i class="fa fa-mail-reply"></i>Reply</a>
+                </template>
+                <template v-else>
+
+                </template>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column is-narrow">
+                <aside class="">
+                  <a id="compose" @click="compose" class="button is-dark">Compose</a>
+
+                  <hr/>
+                  <ul id="chat">
+                    <li v-for="conversation in chat.conversations" @click="openChat(conversation)">
+
+                    </li>
+                  </ul>
+                </aside>
+              </div>
+              <div class="column" v-if="inbox.ready">
+                <div id="inbox">
+                  <div v-if="inbox.currentEmail" class="examine">
+                    <p class="title is-3">{{ inbox.currentEmail.subject }}</p>
+                    <p class="subtitle is-6 is-underlined">{{inbox.currentEmail.addr}}</p>
+                    <p>{{ inbox.currentEmail.body }}</p>
+                  </div>
+                  <ul v-else>
+                    <li class="inboxLine level" v-for="(email,index) in inbox.emails" @click="examineMail(email)">
+                      <div class="level-left">
+                        <div class="level-item">
+                          <p>{{ email.addr }}</p>
+                        </div>
+                        <div class="level-item">
+                          <p class="is-bold">{{ email.subject }}</p>
+                        </div>
+                        <div class="level-item">
+                          <p class="overflow-ellipsis">{{ email.body }}</p>
+                        </div>
+                      </div>
+                      <div class="level-right">
+                        <p>{{ moment(email.timestamp*1000).format("dddd, MMMM Do YYYY, h:mm:ss a") }}</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="column" v-else>
+                <div id="login" class="container" v-if="account.exists">
+                  <h1 class="title">Login: {{account.address}}</h1>
+                  <h2 class="subtitle">I'm here to..</h2>
+                  <p class="control has-addons">
+                    <a class="button" :class="{ 'is-dark': this.inbox.readNewMail }" @click="toggleNewMail">Read incoming mail with my PGP key</a>
+                    <a class="button" :class="{ 'is-dark': this.inbox.readOldMail }" @click="toggleOldMail" v-show="false">Read previously decrypted mail with my password (coming soon)</a>
+                  </p>
+
+                  <p class="control" v-show="inbox.readOldMail">
+                    <label class="label" >Password: </label>
+                    <input type="password" v-model="account.password">
+                  </p>
+
+                  <p class="control" v-show="inbox.readNewMail">
+                    <label class="label">PGP Private Key: </label>
+                    <input type="file" ref="keyfile" @change="loadKey"></input>
+                    <textarea class="textarea" v-model="account.privateKey"></textarea>
+                  </p>
+                  <p class="control" v-show="inbox.readNewMail">
+                    <label class="label" >PGP Passphrase (optional): </label>
+                    <input type="password" v-model="account.passphrase">
+                  </p>
+
+                  <p class="control" v-show="inbox.readNewMail || inbox.readOldMail">
+                    <a class="button is-dark" @click="login">Login</a>
+                  </p>
+                </div>
+                <div id="register" class="container" v-if="!account.exists">
+                  <div class="content">
+                    <p>In order to recieve mail at your address ({{account.address}}), we must store a PGP Public Key
+                      that maps to your ethereum address</p>
+
+                    <p>This key is used to encrypt any emails sent to you, such that
+                      only you can read them with your PGP Private key. Once you send an email, it belongs to that
+                      address, encrypted with their PGP Public Key, and only able to be
+                      decrypted with their PGP Private Key. If you lose your private key or forget its associated passphrase,
+                      you will lose all incoming mail which was encrypted to it. </p>
+                    <p>You can send mail without creating a public key, but you cannot recieve any.</p>
+                    <p>We can create a PGP Key pair for you with or without a passphrase, or you can generate your own (may take a minute).</p>
+
+                    <p class="control has-addons">
+                      <input class="input" type="password" v-model="account.passphrase" placeholder="passphrase (optional)" :disabled="account.isGenerating">
+                      <a class="button" @click="generateKey" :class="{ 'is-loading': account.isGenerating }">Generate</a>
+                    </p>
+                    <p class="control">
+                      <label class="label">Public Key</label>
+                      <textarea class="textarea" v-model="account.publicKey" :disabled="account.isGenerating"></textarea>
+                    </p>
+                    <p class="control" v-show="account.privateKey.length>0">
+                      <label class="label">Private Key</label>
+                      <a class="button" :href="keyDownloadLink()" >Download</a>
+                      <textarea class="textarea" v-model="account.privateKey" :disabled="account.isGenerating"></textarea>
+                    </p>
+                    <p class="control" v-show="account.publicKey.length>0">
+                      <a class="button is-dark" @click="signup">Register!</a>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <input class="input" placeholder="To" v-model="email.addr"
-            :class="{ 'is-danger': !ethereumjsUtil.isValidAddress(email.addr), 'is-success': ethereumjsUtil.isValidAddress(email.addr) }">
-          <input class="input is-light" placeholder="Subject" v-model="email.subject">
-          <textarea class="textarea is-light" placeholder="Body" v-model="email.body"></textarea>
-          <div class="level">
-            <a class="button is-dark" :class="{'is-loading': email.loading}" @click="send(email, index)">Send</a>
-            <span class="is-danger level-item">{{email.error}}</span>
-          </div>
-        </div>
-
-        <div id="donate" class="modal" :class="{'is-active' : meta.isDonating}">
-          <div class="modal-background" @click="toggleDonating">
-          </div>
-          <div class="modal-card has-outline">
-            <div class="modal-card-head">
+          <div id="overlay">
+            <div class="emailContainer has-outline" v-for="(email,index) in inbox.composing">
               <div class="hero is-dark">
                 <div class="level hero-body">
                   <div class="level-item has-text-centered">
-                    <p>Donate</p>
+                    <p class="">{{email.subject}}</p>
+                  </div>
+                  <div class="level-right">
+                    <a class="level-item" @click="close(index)"><i class="fa fa-times"></i></a>
+                  </div>
+                </div>
+              </div>
+              <input class="input" placeholder="To" v-model="email.addr"
+              :class="{ 'is-danger': !ethereumjsUtil.isValidAddress(email.addr), 'is-success': ethereumjsUtil.isValidAddress(email.addr) }">
+              <input class="input is-light" placeholder="Subject" v-model="email.subject">
+              <textarea class="textarea is-light" placeholder="Body" v-model="email.body"></textarea>
+              <div class="level">
+                <a class="button is-dark" :class="{'is-loading': email.loading}" @click="send(email, index)">Send</a>
+                <span class="is-danger level-item">{{email.error}}</span>
+              </div>
+            </div>
+
+            <div id="donate" class="modal" :class="{'is-active' : meta.isDonating}">
+              <div class="modal-background" @click="toggleDonating">
+              </div>
+              <div class="modal-card has-outline">
+                <div class="modal-card-head">
+                  <div class="hero is-dark">
+                    <div class="level hero-body">
+                      <div class="level-item has-text-centered">
+                        <p>Donate</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-card-body">
+                  <div class="content">
+                    <p>Thanks so much for considering to donate. It fuels development of the site and promotes the ethereum ecosystem as a whole!</p>
+                    <div class="control has-addons">
+                      <a class="button" :class="{'is-dark': meta.donateAmount == .5}" @click="setDonateAmount(.5)">.5</a>
+                      <a class="button" :class="{'is-dark': meta.donateAmount == 1}" @click="setDonateAmount(1)">1</a>
+                      <a class="button" :class="{'is-dark': meta.donateAmount == 3}" @click="setDonateAmount(3)">3</a>
+                      <a class="button" :class="{'is-dark': meta.donateAmount == 5}" @click="setDonateAmount(5)">5</a>
+                      <a class="button" :class="{'is-dark': meta.donateAmount == 10}" @click="setDonateAmount(10)">10</a>
+                      <p class="control has-icon has-addons">
+                        <input class="input" v-model="meta.donateAmount"></input>
+                        <i class="fa">Eth</i>
+                        <a class="button is-dark is-outline" @click="donate">Donate</a>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="modal-card-body">
-              <div class="content">
-                <p>Thanks so much for considering to donate. It fuels development of the site and promotes the ethereum ecosystem as a whole!</p>
-                <div class="control has-addons">
-                  <a class="button" :class="{'is-dark': meta.donateAmount == .5}" @click="setDonateAmount(.5)">.5</a>
-                  <a class="button" :class="{'is-dark': meta.donateAmount == 1}" @click="setDonateAmount(1)">1</a>
-                  <a class="button" :class="{'is-dark': meta.donateAmount == 3}" @click="setDonateAmount(3)">3</a>
-                  <a class="button" :class="{'is-dark': meta.donateAmount == 5}" @click="setDonateAmount(5)">5</a>
-                  <a class="button" :class="{'is-dark': meta.donateAmount == 10}" @click="setDonateAmount(10)">10</a>
-                  <p class="control has-icon has-addons">
-                    <input class="input" v-model="meta.donateAmount"></input>
-                    <i class="fa">Eth</i>
-                    <a class="button is-dark is-outline" @click="donate">Donate</a>
-                  </p>
-                </div>
-              </div>
-            </div>
+          </div>
+        </div>
+        <div class="container" v-if="!meta.web3">
+          <div class="content">
+            <h1>Web3 not installed!</h1>
+            <p>This site is built for the Mist browser and Metamask</p>
           </div>
         </div>
       </div>

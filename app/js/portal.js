@@ -2,33 +2,54 @@
 /* jshint -W004 */
 /* jshint -W041 */
 
-var mail = {};
 var app = {};
+var Mail;
 
 $(document).ready(function() {
+  Mail = EthMail.deployed();
+
   openpgp.initWorker({ path:'js/openpgp.worker.min.js' });
   openpgp.config.use_native = false;
 
   initializeVue();
+  initializeWeb3(5, loadApp);
 
-  Mail.userExists(app.account.address).then(function(doesExist) {
-      app.account.exists = doesExist;
-  });
-
-  checkForMoreDonations();
-  web3.eth.filter("latest").watch(function() {
-    checkForMoreDonations();
-  });
 });
+
+function initializeWeb3(retries, cb) {
+  if (retries < 1 || typeof(web3) === 'undefined') {
+    cb(false);
+  } else {
+    Mail.userExists.call(app.account.address).then(function(doesExist) {
+        app.account.exists = doesExist;
+        cb(true);
+    }).catch(function(err) {
+      setTimeout(function() {
+        initializeWeb3(retries--, cb);
+      }, 500);
+    });
+  }
+}
+
+function loadApp(web3Loaded) {
+  app.meta.web3 = web3Loaded;
+
+  if (web3Loaded) {
+    checkForMoreDonations();
+    web3.eth.filter("latest").watch(function() {
+      checkForMoreDonations();
+    });
+  }
+}
 
 function loadMail() {
   var numUnread = 0;
-  Mail.getUnreadSize().then(function(size) {
+  Mail.getUnreadSize.call().then(function(size) {
     numUnread = size;
 
     if (app.account.privateKey) {
       for (var i=0; i<numUnread; i++) {
-        Mail.loadUnread(i).then(function(mail) {
+        Mail.loadUnread.call(i).then(function(mail) {
           processMail(mail);
         });
       }
@@ -42,7 +63,7 @@ function loadMail() {
 
     if (size == 0) {
       // make a starter email
-      Mail.owner().then(function(owner) {
+      Mail.owner.call().then(function(owner) {
         app.inbox.emails.push(new Email(
           owner,
           'Welcome to Ethmail.tech!',
@@ -55,10 +76,10 @@ function loadMail() {
 }
 
 function checkForMoreMail(lastCount) {
-  return Mail.getUnreadSize().then(function(size) {
+  return Mail.getUnreadSize.call().then(function(size) {
     if (size > lastCount) {
       for (var i=lastCount; i < size; i++) {
-        Mail.loadUnread(i).then(function(mail) {
+        Mail.loadUnread.call(i).then(function(mail) {
           processMail(mail);
         });
       }
@@ -68,7 +89,7 @@ function checkForMoreMail(lastCount) {
 }
 
 function checkForMoreDonations() {
-  return Mail.lastDonation().then(function(donation) {
+  return Mail.lastDonation.call().then(function(donation) {
     var from = donation[0];
     var amount = donation[1];
 
@@ -122,7 +143,8 @@ function initializeVue() {
           amount: 0,
           from: '0x0',
           loaded: false
-        }
+        },
+        web3: true
       },
       inbox: {
         emails: [],
@@ -133,7 +155,7 @@ function initializeVue() {
         readOldMail: false
       },
       account: {
-        address: web3.eth.defaultAccount ? web3.eth.defaultAccount : web3.eth.accounts[0],
+        address: '',
         exists: false,
         isGenerating: false,
         privateKey: '',
@@ -207,7 +229,7 @@ function initializeVue() {
       send: function(mail, index) {
         mail.loading = true;
 
-        Mail.userExists(mail.addr).then(function(exists) {
+        Mail.userExists.call(mail.addr).then(function(exists) {
           if (exists) {
             mail.encrypt(function(encryptedMail) {
               Mail.sendMail(mail.addr, encryptedMail).then(function() {
@@ -248,7 +270,7 @@ function initializeVue() {
         }
       },
       suggest: function() {
-        Mail.owner().then(function(owner) {
+        Mail.owner.call().then(function(owner) {
           app.inbox.composing.push(new Email(owner, 'Ethmail.tech Feedback', 'Hey Steve, \n\nI really like X about Y, but Z could really use some work.\n\nThanks!'));
         });
       }
@@ -268,10 +290,10 @@ function Email(addr, subj, body, timestamp) {
 
   var my = this;
   this.encrypt = function(cb) {
-    Mail.userExists(my.addr).then(function (exists) {
+    Mail.userExists.call(my.addr).then(function (exists) {
 
       if (exists) {
-        Mail.getPublicKey(my.addr).then(function(pubkey) {
+        Mail.getPublicKey.call(my.addr).then(function(pubkey) {
           var pgpOpts = {
             data: JSON.stringify({subject: my.subject, body: my.body}),
             publicKeys: openpgp.key.readArmored(pubkey.replace(/\r/g, '')).keys
