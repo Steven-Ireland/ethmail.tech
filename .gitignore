@@ -1,6 +1,4 @@
 node_modules
-.embark
-dist
-chains.json
-#config/contracts.json
+build
+!build/contracts
 .node*
