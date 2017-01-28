@@ -1,6 +1,6 @@
 pragma solidity ^0.4.6;
 
-contract Mail {
+contract EthMail {
 
   address public owner;
   function Mail() {
