@@ -12,9 +12,7 @@ module.exports = {
     ],
 
     "js/openpgp.min.js": ["js/openpgp.min.js"],
-    "js/openpgp.worker.min.js": ["js/openpgp.worker.min.js"],
-
-    "images/": "images/"
+    "js/openpgp.worker.min.js": ["js/openpgp.worker.min.js"]
   },
   rpc: {
     host: "localhost",
