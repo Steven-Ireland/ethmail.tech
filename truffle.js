@@ -6,6 +6,7 @@ module.exports = {
     "app.js": ["js/portal.js"],
     "js/portal.js": ["js/portal.js"],
     "js/index.js": ["js/index.js"],
+    "js/indexworker.js": ["js/indexworker.js"],
     "css/app.css": [
       "css/index.css",
       "css/portal.css"

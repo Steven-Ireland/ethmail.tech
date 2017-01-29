@@ -5,3 +5,15 @@ canvas {
 .transparant, .hero {
 	background-color: #F5F5F5;
 }
+
+.hero-body {
+	padding: 0px;
+}
+
+.level.is-flex-mobile {
+	padding: 2rem;
+}
+
+.level.is-flex-mobile .level-item {
+	margin-bottom: .75rem;
+}
