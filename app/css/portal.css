@@ -34,6 +34,8 @@
 .nav-right {
   flex-grow: inherit;
   flex-shrink: inherit;
+
+  display:inherit;
 }
 
 .modal-card-head {
