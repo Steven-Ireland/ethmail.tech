@@ -20,7 +20,8 @@ function initializeWeb3(retries, cb) {
   if (retries < 1 || typeof(web3) === 'undefined') {
     cb(false);
   } else {
-    Mail.userExists.call(app.account.address).then(function(doesExist) {
+    app.account.address = web3.eth.defaultAccount;
+    Mail.userExists.call(app.account.address, {from: app.account.address}).then(function(doesExist) {
         app.account.exists = doesExist;
         cb(true);
     }).catch(function(err) {
@@ -44,12 +45,12 @@ function loadApp(web3Loaded) {
 
 function loadMail() {
   var numUnread = 0;
-  Mail.getUnreadSize.call().then(function(size) {
+  Mail.getUnreadSize.call({from: app.account.address}).then(function(size) {
     numUnread = size;
 
     if (app.account.privateKey) {
       for (var i=0; i<numUnread; i++) {
-        Mail.loadUnread.call(i).then(function(mail) {
+        Mail.loadUnread.call(i, {from: app.account.address}).then(function(mail) {
           processMail(mail);
         });
       }
@@ -63,7 +64,7 @@ function loadMail() {
 
     if (size == 0) {
       // make a starter email
-      Mail.owner.call().then(function(owner) {
+      Mail.owner.call({from: app.account.address}).then(function(owner) {
         app.inbox.emails.push(new Email(
           owner,
           'Welcome to Ethmail.tech!',
@@ -76,10 +77,10 @@ function loadMail() {
 }
 
 function checkForMoreMail(lastCount) {
-  return Mail.getUnreadSize.call().then(function(size) {
+  return Mail.getUnreadSize.call({from: app.account.address}).then(function(size) {
     if (size > lastCount) {
       for (var i=lastCount; i < size; i++) {
-        Mail.loadUnread.call(i).then(function(mail) {
+        Mail.loadUnread.call(i, {from: app.account.address}).then(function(mail) {
           processMail(mail);
         });
       }
@@ -89,7 +90,7 @@ function checkForMoreMail(lastCount) {
 }
 
 function checkForMoreDonations() {
-  return Mail.lastDonation.call().then(function(donation) {
+  return Mail.lastDonation.call({from: app.account.address}).then(function(donation) {
     var from = donation[0];
     var amount = donation[1];
 
@@ -222,17 +223,17 @@ function initializeVue() {
         this.inbox.composing.push(new Email('','',''));
       },
       signup: function() {
-        Mail.register(this.account.publicKey).then(function() {
+        Mail.register(this.account.publicKey, {from: app.account.address}).then(function() {
           app.account.exists = true;
         });
       },
       send: function(mail, index) {
         mail.loading = true;
 
-        Mail.userExists.call(mail.addr).then(function(exists) {
+        Mail.userExists.call(mail.addr, {from: app.account.address}).then(function(exists) {
           if (exists) {
             mail.encrypt(function(encryptedMail) {
-              Mail.sendMail(mail.addr, encryptedMail).then(function() {
+              Mail.sendMail(mail.addr, encryptedMail, {from: app.account.address}).then(function() {
                 mail.loading = false;
                 app.close(index);
               });
@@ -270,7 +271,7 @@ function initializeVue() {
         }
       },
       suggest: function() {
-        Mail.owner.call().then(function(owner) {
+        Mail.owner.call({from: app.account.address}).then(function(owner) {
           app.inbox.composing.push(new Email(owner, 'Ethmail.tech Feedback', 'Hey Steve, \n\nI really like X about Y, but Z could really use some work.\n\nThanks!'));
         });
       }
@@ -290,10 +291,10 @@ function Email(addr, subj, body, timestamp) {
 
   var my = this;
   this.encrypt = function(cb) {
-    Mail.userExists.call(my.addr).then(function (exists) {
+    Mail.userExists.call(my.addr, {from: app.account.address}).then(function (exists) {
 
       if (exists) {
-        Mail.getPublicKey.call(my.addr).then(function(pubkey) {
+        Mail.getPublicKey.call(my.addr, {from: app.account.address}).then(function(pubkey) {
           var pgpOpts = {
             data: JSON.stringify({subject: my.subject, body: my.body}),
             publicKeys: openpgp.key.readArmored(pubkey.replace(/\r/g, '')).keys
